@@ -30,9 +30,10 @@ export function streamifyResponse(handler: RequestHandler): RequestHandler {
         const responseStream: ResponseStream = patchArgs(argList)
         await target(...argList)
         return {
-          statusCode: 200,
+          statusCode: responseStream._metadata?.statusCode ?? 200,
           headers: {
             'content-type': responseStream._contentType || 'application/json',
+            ...responseStream._metadata?.headers,
           },
           ...(responseStream._isBase64Encoded
             ? { isBase64Encoded: responseStream._isBase64Encoded }
@@ -43,6 +44,16 @@ export function streamifyResponse(handler: RequestHandler): RequestHandler {
         }
       },
     })
+  }
+}
+
+export function fromHttpResponse(responseStream: ResponseStream, metadata: any) {
+  if (isInAWS()) {
+    // @ts-ignore
+    return awslambda.HttpResponseStream.from(responseStream, metadata);
+  } else {
+    responseStream.setMetadata(metadata);
+    return responseStream;
   }
 }
 

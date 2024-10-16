@@ -16,6 +16,9 @@ class ResponseStream extends stream_1.Stream.Writable {
     getBufferedData() {
         return Buffer.concat(this.response);
     }
+    setMetadata(metadata) {
+        this._metadata = metadata;
+    }
     setContentType(contentType) {
         this._contentType = contentType;
     }

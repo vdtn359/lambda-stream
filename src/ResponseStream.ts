@@ -1,8 +1,9 @@
 import { Stream } from 'stream'
 
 export class ResponseStream extends Stream.Writable {
-  private response: Buffer[]
-  _contentType?: string
+  private response: Buffer[];
+  _contentType?: string;
+  _metadata?: any;
   _isBase64Encoded?: boolean
 
   constructor() {
@@ -22,6 +23,10 @@ export class ResponseStream extends Stream.Writable {
 
   getBufferedData(): Buffer {
     return Buffer.concat(this.response)
+  }
+
+  setMetadata(metadata: any) {
+    this._metadata = metadata;
   }
 
   setContentType(contentType: string) {
